@@ -1,0 +1,82 @@
+name: GitHub Release
+
+on:
+  workflow_call:
+    inputs:
+      version:
+        type: string
+        required: true
+      prerelease:
+        type: boolean
+        required: false
+        default: false
+
+jobs:
+  create-release:
+    name: Create release
+    runs-on: ubuntu-latest
+    outputs:
+      upload-url: ${{ steps.create-release.outputs.upload_url }}
+      id: ${{ steps.create-release.outputs.id }}
+    steps:
+      - name: Create release
+        id: create-release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ inputs.version }}
+          release_name: ${{ inputs.version }}
+          draft: true
+          prerelease: ${{ inputs.prerelease }}
+  build:
+    needs: ["create-release"]
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: Roblox/setup-foreman@v1
+        with:
+          version: "^1.0.0"
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build
+        run: remodel run build
+      - name: Create release archive
+        run: |
+          mkdir release
+          cp shutdown.rbxm release
+          cd release
+          zip ../release.zip *
+      - name: Prepare asset name
+        run: |
+          echo "ASSET_NAME=intro-animation-${{ inputs.version }}" >> $GITHUB_ENV
+      - name: Upload archive to release
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.create-release.outputs.upload-url }}
+          asset_path: release.zip
+          asset_name: ${{ env.ASSET_NAME }}.zip
+          asset_content_type: application/octet-stream
+      - name: Upload archive as artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ env.ASSET_NAME }}
+          path: release
+  publish-release:
+    needs: ["create-release", "build"]
+    name: Publish release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Publish Release
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{secrets.GITHUB_TOKEN}}
+          script: |
+            github.rest.repos.updateRelease({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              release_id: ${{ needs.create-release.outputs.id }},
+              draft: false
+            });
