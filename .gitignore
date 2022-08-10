@@ -1,0 +1,14 @@
+# Project place file
+/shutdown.rbxlx
+/shutdown.rbxl
+
+# Project model file
+/shutdown.rbxmx
+/shutdown.rbxm
+
+# Roblox Studio lock files
+/*.rbxlx.lock
+/*.rbxl.lock
+
+# Prevent .vscode
+/.vscode
