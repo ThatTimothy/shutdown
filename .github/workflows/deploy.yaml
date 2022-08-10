@@ -31,7 +31,7 @@ jobs:
     uses: ./.github/workflows/gh-release.yaml
     with:
       version: ${{ needs.check-tag.outputs.version }}
-      prerelease: ${{ needs.check-tag.outputs.prerelease }}
+      prerelease: ${{ needs.check-tag.outputs.prerelease == 'true' }}
   wally:
     needs: ["ci"]
     name: Wally
