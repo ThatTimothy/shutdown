@@ -1,0 +1,50 @@
+name: Deploy
+
+# Run when tagged properly (v1.0, v1.0-alpha)
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  check-tag:
+    name: Check tag
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.get-version.outputs.version }}
+      prerelease: ${{ steps.get-prerelease.outputs.prerelease }}
+    steps:
+      - name: Get version
+        id: get-version
+        run: echo ::set-output name=version::${GITHUB_REF/refs\/tags\//}
+      - name: Get prerelease
+        id: get-prerelease
+        # Prereleases contain dashes (v1.0.0-alpha, v1.0.0-dev, v1.0.0-beta)
+        run: echo ::set-output name=prerelease::${{ contains(steps.check-tag.outputs.version, '-') }}
+  ci:
+    needs: ["check-tag"]
+    name: CI
+    uses: ./.github/workflows/ci.yaml
+  gh-release:
+    needs: ["check-tag", "ci"]
+    name: GitHub Release
+    uses: ./.github/workflows/gh-release.yaml
+    with:
+      version: ${{ needs.check-tag.outputs.version }}
+      prerelease: ${{ needs.check-tag.outputs.prerelease }}
+  wally:
+    needs: ["ci"]
+    name: Wally
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: Roblox/setup-foreman@v1
+        with:
+          version: "^1.0.0"
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Publish
+        run: |
+          mkdir -p ~/.wally
+          printf "[tokens]\n\"https://api.wally.run/\" = \"%s\"" "${{ secrets.WALLY_TOKEN }}" >> ~/.wally/auth.toml
+
+          wally publish
