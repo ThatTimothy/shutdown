@@ -20,7 +20,7 @@ jobs:
       - name: Get prerelease
         id: get-prerelease
         # Prereleases contain dashes (v1.0.0-alpha, v1.0.0-dev, v1.0.0-beta)
-        run: echo ::set-output name=prerelease::${{ contains(steps.check-tag.outputs.version, '-') }}
+        run: echo ::set-output name=prerelease::${{ contains(steps.get-version.outputs.version, '-') }}
   ci:
     needs: ["check-tag"]
     name: CI
