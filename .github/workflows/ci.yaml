@@ -1,0 +1,35 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+  workflow_call:
+
+jobs:
+  format:
+    name: Check formatting
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: Roblox/setup-foreman@v1
+        with:
+          version: "^1.0.0"
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Check formatting
+        run: stylua --check .
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: Roblox/setup-foreman@v1
+        with:
+          version: "^1.0.0"
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Lint
+        run: selene .
