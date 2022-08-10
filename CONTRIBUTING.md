@@ -1,0 +1,53 @@
+This file contains information for contributing to this project.
+
+# Tooling
+
+## Foreman
+
+This project uses [Foreman](https://github.com/Roblox/foreman) to manage tooling.
+
+After installing [Foreman](https://github.com/Roblox/foreman), install tooling by running:
+
+```bash
+foreman install
+```
+
+## pre-commit
+
+Additionally, this project uses [pre-commit](https://github.com/pre-commit/pre-commit) to check files before committing.
+
+After installing [pre-commit](https://github.com/pre-commit/pre-commit), install hooks by running:
+
+```bash
+pre-commit install
+```
+
+# End of Line
+
+For compatibility on all platforms, this repo uses solely Unix (`LF`) line endings.
+Please configure your editor to follow this requirement.
+
+# Testing
+
+To test, build the test place with:
+
+```bash
+remodel run build
+```
+
+The test place is called `shutdown-staging.rbxl`.
+You can start it (on Windows) using:
+
+```bash
+start "shutdown.rbxl"
+```
+
+You can also make changes live using `rojo serve`:
+
+```bash
+rojo serve test.project.json
+```
+
+# Deploying
+
+TODO: Deploying is automatic, so pushing a new version tag should publish and release automatically.
