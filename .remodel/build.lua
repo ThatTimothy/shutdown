@@ -1,5 +1,17 @@
-local fileRequire = require -- Avoid linting
-local ENVIRONMENTS = fileRequire("ENVIRONMENTS")
+local JOBS = {
+	Production = {
+		OutputPath = "shutdown.rbxm",
+		ProjectPath = "default.project.json",
+	},
+	TestingMain = {
+		OutputPath = "shutdown-test-main.rbxl",
+		ProjectPath = "test-main.project.json",
+	},
+	TestingMigration = {
+		OutputPath = "shutdown-test-migration.rbxl",
+		ProjectPath = "test-migration.project.json",
+	},
+}
 
 local LINE = string.rep("=", 30)
 
@@ -9,8 +21,8 @@ print(LINE)
 
 local count = 0
 
-for _name, env in pairs(ENVIRONMENTS) do
-	os.execute(string.format('rojo build %s -o "%s"', env.ProjectPath, env.OutputPath))
+for _name, job in pairs(JOBS) do
+	os.execute(string.format('rojo build %s -o "%s"', job.ProjectPath, job.OutputPath))
 	count = count + 1
 end
 

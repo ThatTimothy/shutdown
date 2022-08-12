@@ -1,0 +1,25 @@
+{
+	"name": "Shutdown Test - Migration",
+	"servePort": 34873,
+	"tree": {
+		"$className": "DataModel",
+		"ReplicatedStorage": {
+			"Packages": {
+				"$className": "Folder",
+				"Shutdown": {
+					"$path": "default.project.json"
+				}
+			}
+		},
+		"ServerScriptService": {
+			"Server": {
+				"$path": "test/migration"
+			}
+		},
+		"Players": {
+			"$properties": {
+				"CharacterAutoLoads": false
+			}
+		}
+	}
+}
