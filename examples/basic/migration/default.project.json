@@ -1,5 +1,5 @@
 {
-	"name": "Shutdown Test - Migration",
+	"name": "Example Basic - Migration",
 	"servePort": 34873,
 	"tree": {
 		"$className": "DataModel",
@@ -7,13 +7,13 @@
 			"Packages": {
 				"$className": "Folder",
 				"Shutdown": {
-					"$path": "default.project.json"
+					"$path": "../../../default.project.json"
 				}
 			}
 		},
 		"ServerScriptService": {
 			"Server": {
-				"$path": "test/migration"
+				"$path": "server"
 			}
 		},
 		"Players": {

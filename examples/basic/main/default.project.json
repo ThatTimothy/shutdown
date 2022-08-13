@@ -1,5 +1,5 @@
 {
-	"name": "Shutdown Test - Main",
+	"name": "Example Basic - Main",
 	"servePort": 34872,
 	"tree": {
 		"$className": "DataModel",
@@ -7,18 +7,21 @@
 			"Packages": {
 				"$className": "Folder",
 				"Shutdown": {
-					"$path": "default.project.json"
+					"$path": "../../../default.project.json"
+				},
+				"GetMigrationPlace": {
+					"$path": "../../res/GetMigrationPlace.lua"
 				}
 			}
 		},
 		"ServerScriptService": {
 			"Server": {
-				"$path": "test/main"
+				"$path": "server"
 			}
 		},
 		"Workspace": {
 			"Map": {
-				"$path": "test/main/map.rbxmx"
+				"$path": "../../res/map.rbxmx"
 			}
 		}
 	}

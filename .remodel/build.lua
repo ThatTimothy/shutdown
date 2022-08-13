@@ -1,22 +1,29 @@
 local JOBS = {
-	Model = {
+	-- Model
+	{
 		OutputPath = "shutdown.rbxm",
 		ProjectPath = "default.project.json",
 	},
-	TestingMain = {
-		OutputPath = "shutdown-test-main.rbxl",
-		ProjectPath = "test-main.project.json",
-	},
-	TestingMigration = {
-		OutputPath = "shutdown-test-migration.rbxl",
-		ProjectPath = "test-migration.project.json",
-	},
 }
+
+-- Examples
+local EXAMPLES = { "basic" }
+
+for _, example in pairs(EXAMPLES) do
+	table.insert(JOBS, {
+		OutputPath = string.format("examples/%s/main.rbxl", example),
+		ProjectPath = string.format("examples/%s/main/default.project.json", example),
+	})
+	table.insert(JOBS, {
+		OutputPath = string.format("examples/%s/migration.rbxl", example),
+		ProjectPath = string.format("examples/%s/migration/default.project.json", example),
+	})
+end
 
 local LINE = string.rep("=", 30)
 
 print(LINE)
-print("Building all environments...")
+print("Starting jobs...")
 print(LINE)
 
 local count = 0
@@ -27,5 +34,5 @@ for _name, job in pairs(JOBS) do
 end
 
 print(LINE)
-print(string.format("Built %i/%i environments.", count, count))
+print(string.format("Completed %i/%i jobs.", count, count))
 print(LINE)
