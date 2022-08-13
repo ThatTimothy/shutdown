@@ -16,9 +16,9 @@
 				"$path": "test/main"
 			}
 		},
-		"Players": {
-			"$properties": {
-				"CharacterAutoLoads": false
+		"Workspace": {
+			"Map": {
+				"$path": "test/main/map.rbxmx"
 			}
 		}
 	}

@@ -3,12 +3,15 @@
 /*.rbxl
 
 # Project model file
-/shutdown.rbxmx
-/shutdown.rbxm
+/*.rbxmx
+/*.rbxm
 
 # Roblox Studio lock files
 /*.rbxlx.lock
 /*.rbxl.lock
+
+# Packages
+Packages
 
 # Prevent .vscode
 /.vscode

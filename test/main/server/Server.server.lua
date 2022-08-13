@@ -8,7 +8,8 @@ local MIGRATION_PLACE_ID = require(script.Parent.GetMigrationPlace)
 
 Shutdown.Init({
 	MigrationPlaceId = MIGRATION_PLACE_ID,
-	-- HandleTeleport = function(players, destinationPlaceID)
+	Debug = true,
+	-- HandleTeleport = function(players, destinationPlaceID, reservedServerAccessCode)
 	-- 	-- Code to handle teleport
 	-- end
 })

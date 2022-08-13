@@ -1,5 +1,5 @@
 local JOBS = {
-	Production = {
+	Model = {
 		OutputPath = "shutdown.rbxm",
 		ProjectPath = "default.project.json",
 	},

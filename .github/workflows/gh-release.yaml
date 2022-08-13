@@ -49,7 +49,7 @@ jobs:
           zip ../release.zip *
       - name: Prepare asset name
         run: |
-          echo "ASSET_NAME=intro-animation-${{ inputs.version }}" >> $GITHUB_ENV
+          echo "ASSET_NAME=shutdown-${{ inputs.version }}" >> $GITHUB_ENV
       - name: Upload archive to release
         uses: actions/upload-release-asset@v1
         env:
