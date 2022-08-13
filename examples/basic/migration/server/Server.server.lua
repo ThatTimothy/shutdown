@@ -1,6 +1,6 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
-local Shutdown = require(ReplicatedStorage.Packages.Shutdown)
+local Shutdown = require(ReplicatedStorage.ServerPackages.Shutdown)
 
 Shutdown.Init({
 	IsMigrationPlace = true,
