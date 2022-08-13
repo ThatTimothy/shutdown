@@ -1,6 +1,6 @@
 [package]
 name = "thattimothy/shutdown"
-version = "0.0.1-alpha"
+version = "0.0.1"
 description = "The easiest way to shutdown your game without worry."
 registry = "https://github.com/UpliftGames/wally-index"
 realm = "shared"
