@@ -5,6 +5,7 @@ local Shutdown = {}
 
 local Output = require(script.Output)
 
+local MAX_PLAYERS_PER_TELEPORT = 50
 local ALREADY_INITIALIZED = "Shutdown.Init may only be called once"
 local INVALID_ARGUMENTS = "Invalid arguments, expected Shutdown.Init(options) "
 
@@ -85,27 +86,36 @@ function Shutdown.Init(options)
 
 		task.wait(options.WaitBeforeReturn)
 
-		local players = Players:GetPlayers()
-		local playerGroups = { {} }
-
-		for _, player in players do
-			local group = playerGroups[#playerGroups]
-
-			table.insert(group, player)
-		end
-
 		local function handleGroup(group)
-			local destination = options.DetermineDestination(group)
-			task.spawn(options.HandleTeleport, group, destination)
-		end
+			local subGroups = { {} }
 
-		for _, group in playerGroups do
-			handleGroup(group)
+			for _, player in group do
+				local subGroup = subGroups[#subGroups]
+
+				table.insert(subGroup, player)
+
+				if #subGroup >= MAX_PLAYERS_PER_TELEPORT then
+					table.insert(subGroups, {})
+				end
+			end
+
+			for _, subGroup in subGroups do
+				local destination = options.DetermineDestination(subGroup)
+				task.spawn(options.HandleTeleport, subGroup, destination)
+			end
 		end
 
 		Players.PlayerAdded:Connect(function(player)
 			handleGroup({ player })
 		end)
+
+		while true do
+			local players = Players:GetPlayers()
+
+			handleGroup(players)
+
+			task.wait(1)
+		end
 	else
 		local reservedServerAccessCode =
 			tryForever(5, 5, TeleportService.ReserveServer, TeleportService, options.MigrationPlaceId)
