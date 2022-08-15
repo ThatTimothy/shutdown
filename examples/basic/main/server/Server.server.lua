@@ -7,9 +7,8 @@ local Shutdown = require(ReplicatedStorage.ServerPackages.Shutdown)
 local MIGRATION_PLACE_ID = require(ReplicatedStorage.ServerPackages.GetMigrationPlace)
 
 Shutdown.Init({
-	MigrationPlaceId = MIGRATION_PLACE_ID,
+	-- Set the destination players will be teleported to when the server closes
+	Destination = MIGRATION_PLACE_ID,
+	-- Enable debugging (optional)
 	Debug = true,
-	-- HandleTeleport = function(players, destinationPlaceID, reservedServerAccessCode)
-	-- 	-- Code to handle teleport
-	-- end
 })

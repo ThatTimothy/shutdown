@@ -6,6 +6,8 @@ if #args ~= 3 then
 	)
 end
 
+local LINE = string.rep("=", 30)
+
 local example = args[1]
 local mainPlaceId = tonumber(args[2])
 local migrationPlaceId = tonumber(args[3])
@@ -26,3 +28,7 @@ remodel.writeExistingPlaceAsset(mainPlace, mainPlaceId)
 
 print(string.format("Publishing `%s` to `roblox.com/games/%i`", migrationPlacePath, migrationPlaceId))
 remodel.writeExistingPlaceAsset(migrationPlace, migrationPlaceId)
+
+print(LINE)
+print(string.format("Launch now: https://www.roblox.com/games/start?placeId=%i&launchData=Data", mainPlaceId))
+print(LINE)

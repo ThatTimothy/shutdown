@@ -7,34 +7,43 @@ local Output = require(script.Output)
 
 local MAX_PLAYERS_PER_TELEPORT = 50
 local ALREADY_INITIALIZED = "Shutdown.Init may only be called once"
-local INVALID_ARGUMENTS = "Invalid arguments, expected Shutdown.Init(options) "
+local INVALID_ARGUMENTS = "Invalid arguments, expected Shutdown.Init(options)"
+local NO_DESTINATION_PROVIDED = "Destination was not provided, required to determine where to send players"
+local DESTINATION_SHOULD_BE_NUMBER_OR_METHOD = "Destination provided should be a number or method"
+local DESTINATION_SHOULD_BE_CONSTANT_WHEN_NOT_MIGRATION_PLACE =
+	"Destination should be a constant number representing the migration place to teleport to when not a miration place"
 
-local function DEFAULT_HANDLE_TELEPORT(players, destinationPlaceID, reservedServerAccessCode)
+local DEFAULT_OPTIONS = {
+	WaitBeforeReturn = 5,
+}
+
+type Options = {
+	Debug: boolean?,
+
+	BeforeTeleport: ((players: Array<Player>) -> ())?,
+	Destination: number | (players: Array<Player>) -> { PlaceId: number, ReservedServerAccessCode: number? },
+	CreateTeleportData: ((players: Array<Player>) -> (any))?,
+
+	IsMigrationPlace: boolean?,
+
+	WaitBeforeReturn: number?,
+}
+
+local initialized = false
+
+local function teleport(players, destinationPlaceId, teleportData, reservedServerAccessCode)
 	local options = Instance.new("TeleportOptions")
 
 	if reservedServerAccessCode then
 		options.ReservedServerAccessCode = reservedServerAccessCode
 	end
 
-	return TeleportService:TeleportAsync(destinationPlaceID, players, options)
+	if teleportData then
+		options:SetTeleportData(teleportData)
+	end
+
+	return TeleportService:TeleportAsync(destinationPlaceId, players, options)
 end
-
-local function DEFAULT_DETERMINE_DESTINATION(players)
-	local joinData = players[1]:GetJoinData()
-
-	return joinData.SourcePlaceId
-end
-
-local DEFAULT_OPTIONS = {
-	Debug = false,
-	DetermineDestination = DEFAULT_DETERMINE_DESTINATION,
-	HandleTeleport = DEFAULT_HANDLE_TELEPORT,
-	IsMigrationPlace = false,
-	MigrationPlaceId = false,
-	WaitBeforeReturn = 5,
-}
-
-local initialized = false
 
 local function tryForever(delay, dropoff, ...)
 	local args = table.pack(pcall(...))
@@ -47,7 +56,7 @@ local function tryForever(delay, dropoff, ...)
 	return select(2, table.unpack(args))
 end
 
-function Shutdown.Init(options)
+function Shutdown.Init(options: Options)
 	if initialized then
 		error(ALREADY_INITIALIZED)
 	else
@@ -64,13 +73,43 @@ function Shutdown.Init(options)
 		end
 	end
 
+	if not options.Destination then
+		error(NO_DESTINATION_PROVIDED)
+	end
+
+	if typeof(options.Destination) ~= "number" and typeof(options.Destination) ~= "function" then
+		error(DESTINATION_SHOULD_BE_NUMBER_OR_METHOD)
+	end
+
+	table.freeze(options)
+
 	Output.SetDebug(options.Debug)
 
-	Output.Debug("Started with options:", options)
+	Output.Debug("Started with options:", Output.PrettyTable(options))
 
 	if RunService:IsStudio() then
 		Output.Debug("Ended: not running in studio")
 		return
+	end
+
+	local function handleTeleport(players, reservedServerAccessCode)
+		if options.BeforeTeleport then
+			options.BeforeTeleport(players)
+		end
+
+		local destination = options.Destination
+
+		if typeof(destination) == "function" then
+			destination = destination(players)
+		end
+
+		local teleportData
+
+		if options.CreateTeleportData then
+			teleportData = options.CreateTeleportData(players, destination)
+		end
+
+		task.spawn(teleport, players, destination, teleportData, reservedServerAccessCode)
 	end
 
 	local isMigrationPlace = options.IsMigrationPlace
@@ -102,8 +141,7 @@ function Shutdown.Init(options)
 			Output.Debug(string.format("Teleporting group of %s players as %s subgroups", #group, #subGroups))
 
 			for _, subGroup in subGroups do
-				local destination = options.DetermineDestination(subGroup)
-				task.spawn(options.HandleTeleport, subGroup, destination)
+				task.spawn(handleTeleport, subGroup)
 			end
 		end
 
@@ -119,12 +157,18 @@ function Shutdown.Init(options)
 			task.wait(1)
 		end
 	else
+		if typeof(options.Destination) ~= "number" then
+			error(DESTINATION_SHOULD_BE_CONSTANT_WHEN_NOT_MIGRATION_PLACE)
+		end
+
 		Output.Debug("Reserving server...")
 		local reservedServerAccessCode =
-			tryForever(5, 5, TeleportService.ReserveServer, TeleportService, options.MigrationPlaceId)
+			tryForever(5, 5, TeleportService.ReserveServer, TeleportService, options.Destination)
 		Output.Debug("Reserved server")
 
 		game:BindToClose(function()
+			Output.Debug("Server closing...")
+
 			while true do
 				local players = Players:GetPlayers()
 
@@ -136,7 +180,7 @@ function Shutdown.Init(options)
 				Output.Debug("Teleporting all players...")
 
 				for _, player in players do
-					task.spawn(options.HandleTeleport, { player }, options.MigrationPlaceId, reservedServerAccessCode)
+					task.spawn(handleTeleport, { player }, reservedServerAccessCode)
 				end
 
 				task.wait(1)

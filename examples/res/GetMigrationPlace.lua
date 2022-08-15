@@ -2,6 +2,11 @@
 -- However, with testing games that might differ, we need a consistent way of finding the Migration place.
 
 local AssetService = game:GetService("AssetService")
+local RunService = game:GetService("RunService")
+
+if RunService:IsStudio() then
+	return 0
+end
 
 local places = {}
 
