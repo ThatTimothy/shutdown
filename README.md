@@ -2,6 +2,22 @@
 
 The easiest way to shutdown your game without worry.
 
+Shutdown's goal is simple: shutdown your old servers and get players back into new ones ASAP.
+No reconnect buttons, no waiting around, it just works™.
+
+# How
+
+Shutdown functions by having two types of places:
+- Normal places
+  - These contain the typical content for your game, like the map and game logic
+- Migration place
+  - A single place which contains as little content as possible
+
+When a normal place's servers shut down, players are teleported to the migration place.
+After a configurable amount of time passes, they are teleported back to a configurable normal place.
+
+For configuration options, see the [Usage](#usage) section.
+
 # Installation
 
 There are a couple of ways to install Shutdown:
