@@ -99,6 +99,8 @@ function Shutdown.Init(options)
 				end
 			end
 
+			Output.Debug(string.format("Teleporting group of %s players as %s subgroups", #group, #subGroups))
+
 			for _, subGroup in subGroups do
 				local destination = options.DetermineDestination(subGroup)
 				task.spawn(options.HandleTeleport, subGroup, destination)
@@ -117,8 +119,10 @@ function Shutdown.Init(options)
 			task.wait(1)
 		end
 	else
+		Output.Debug("Reserving server...")
 		local reservedServerAccessCode =
 			tryForever(5, 5, TeleportService.ReserveServer, TeleportService, options.MigrationPlaceId)
+		Output.Debug("Reserved server")
 
 		game:BindToClose(function()
 			while true do
@@ -128,6 +132,8 @@ function Shutdown.Init(options)
 					Output.Debug("No players left, ending...")
 					break
 				end
+
+				Output.Debug("Teleporting all players...")
 
 				for _, player in players do
 					task.spawn(options.HandleTeleport, { player }, options.MigrationPlaceId, reservedServerAccessCode)
