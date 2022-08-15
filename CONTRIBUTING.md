@@ -29,25 +29,18 @@ Please configure your editor to follow this requirement.
 
 # Testing
 
-To test, build the test place with:
+To test, build the examples with:
 
 ```bash
 remodel run build
 ```
 
-The test place is called `shutdown-staging.rbxl`.
-You can start it (on Windows) using:
+To upload a example, you can use:
 
 ```bash
-start "shutdown.rbxl"
-```
-
-You can also make changes live using `rojo serve`:
-
-```bash
-rojo serve test.project.json
+remodel run upload-example [example] [mainPlaceId] [migrationPlaceId]
 ```
 
 # Deploying
 
-TODO: Deploying is automatic, so pushing a new version tag should publish and release automatically.
+Deploying is automatic, so pushing a new version tag should publish and release automatically.
